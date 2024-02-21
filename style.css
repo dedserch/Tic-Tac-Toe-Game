@@ -1,0 +1,36 @@
+
+
+.board {
+    display: grid;
+    width: 300px;
+    height: 300px;
+    grid-template-columns: repeat(3,100px);
+    margin-top: 40px;
+    margin: 0 auto;
+}
+.cells {
+    border: 3px solid black;
+    width: 100px;
+    height: 100px;
+    place-items: center;
+    text-align: center;
+    font-size: 70px;
+}
+h1 {
+    text-align: center;
+}
+
+.head-content{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+button{
+    padding: 10px 20px;
+    border-radius: 10px;
+    width: 100px;
+    margin: 0 auto;
+    font-weight: 600;
+    cursor: pointer;
+}
