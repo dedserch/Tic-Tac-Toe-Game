@@ -22,27 +22,38 @@ body {
     background: rgba(255, 255, 255, 0.93);
     z-index: 1;
 }
+input{
+    margin-top: 10px;
+    outline: none;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #9999;
+    font-size: 20px;
+}
 
 .board {
     display: grid;
-    width: 300px;
-    height: 300px;
-    grid-template-columns: repeat(3,100px);
+    font-size: calc(1rem + 2vw);
     margin: 0 auto;
 }
-.cells {
+.row {
+    display: flex;
+    align-items: center;
+}
+.cell {
     border: 3px solid black;
     width: 100px;
     height: 100px;
+    display: grid;
     place-items: center;
-    text-align: center;
     font-size: 70px;
-    border-radius: 20px;
+    border-radius: 10px;
+    cursor: pointer;
 }
 h1 {
     text-align: center;
     font-family: 'Roboto', sans-serif;
-    font-size: 50px
+    font-size: 45px
 }
 
 .head-content{
@@ -91,6 +102,11 @@ button{
     margin-top: 30px;
     font-size: 20px;
 }
+p{
+    color: red;
+    margin: 10px 0;
+    font-size: 16px;
+}
 h2{
     color: #000;
     font-size: 50px;
@@ -103,6 +119,7 @@ h3{
     display: block;
 }
 @media only screen and (max-width: 450px) {
+
     .container {
       max-width: 100%;
     }
@@ -114,3 +131,4 @@ h3{
       font-size: 40px;
     }
 }
+
