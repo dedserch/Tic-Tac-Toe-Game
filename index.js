@@ -55,22 +55,6 @@ const generateCell = (row, column) => {
   return cell
 }
 
-const openWinningModal = (currentPlayer, gameMove) => {
-  overlay.classList.add('active')
-  overlayMove.innerHTML = `На ходу: ${gameMove}`
-  winner.innerHTML = `Победил: ${currentPlayer}`
-}
-
-const openDrawModal = (gameMove) => {
-  overlay.classList.add('active')
-  overlayMove.innerHTML = `На ходу: ${gameMove}`
-  winner.innerHTML = 'Ничья'
-}
-
-const closeModal = () => {
-  overlay.classList.remove('active')
-}
-
 const cellClick = (e) => {
   if (gameOver) {
     return
@@ -108,64 +92,70 @@ const cellClick = (e) => {
       : players.get('FirstPlayer')
 }
 
+const openWinningModal = (currentPlayer, gameMove) => {
+  overlay.classList.add('active')
+  overlayMove.innerHTML = `На ходу: ${gameMove}`
+  winner.innerHTML = `Победил: ${currentPlayer}`
+}
+
+const openDrawModal = (gameMove) => {
+  overlay.classList.add('active')
+  overlayMove.innerHTML = `На ходу: ${gameMove}`
+  winner.innerHTML = 'Ничья'
+}
+
+const closeModal = () => {
+  overlay.classList.remove('active')
+}
+
 const checkWinner = (winningLength) => {
-  const conditions = winningConditions(winningLength);
+  const conditions = winningConditions(winningLength)
 
   return conditions.some((condition) => {
-    const symbols = condition.map((cell) => freeCells[cell]);
-    const uniqueSymbol = [...new Set(symbols)];
+    const symbols = condition.map((cell) => freeCells[cell])
+    const uniqueSymbol = [...new Set(symbols)]
 
-    return uniqueSymbol.length === 1 && uniqueSymbol[0] !== null;
-  });
+    return uniqueSymbol.length === 1 && uniqueSymbol[0] !== null
+  })
 }
 
 const winningConditions = (winningLength) => {
   const rows = Array.from(
     Array(boardSize),
     (_, i) => Array.from(Array(boardSize), (_, j) => i * boardSize + j)
-  );
+  )
   const columns = Array.from(
     Array(boardSize),
     (_, i) => Array.from(Array(boardSize), (_, j) => i + j * boardSize)
-  );
-  const diagonals = [];
+  )
+  const diagonals = []
 
-  for (let i = 0; i <= boardSize - winningLength; i++) {
-    for (let j = 0; j <= boardSize - winningLength; j++) {
-      const diagonal = [];
-      for (let k = 0; k < winningLength; k++) {
-        diagonal.push((i + k) * boardSize + j + k);
-      }
-      diagonals.push(diagonal);
-    }
-  }
+  Array.from({ length: boardSize - winningLength + 1 }).forEach((_, i) => {
+    Array.from({ length: boardSize - winningLength + 1 }).forEach((_, j) => {
+      const diagonal = Array.from({ length: winningLength }).map(
+        (_, k) => (i + k) * boardSize + j + k
+      )
+      diagonals.push(diagonal)
+    })
+  })
 
-  for (let i = 0; i <= boardSize - winningLength; i++) {
-    for (let j = winningLength - 1; j < boardSize; j++) {
-      const diagonal = [];
-      for (let k = 0; k < winningLength; k++) {
-        diagonal.push((i + k) * boardSize + j - k);
-      }
-      diagonals.push(diagonal);
-    }
-  }
+  Array.from({ length: boardSize - winningLength + 1 }).forEach((_, i) => {
+    Array.from({ length: boardSize - winningLength + 1 }).forEach((_, j) => {
+      const diagonal = Array.from({ length: winningLength }).map(
+        (_, k) => (i + k) * boardSize + j + winningLength - 1 - k
+      )
+      diagonals.push(diagonal)
+    })
+  })
 
-  const checkSubarray = (array, length) => {
-    const result = [];
-    for (let i = 0; i <= array.length - length; i++) {
-      result.push(array.slice(i, i + length));
-    }
-    return result;
-  };
+  const checkSubarray = (array, length) =>
+    Array.from({ length: array.length - length + 1 }).map((_, i) => array.slice(i, i + length))
 
-  const addSubarrays = (arrays) => {
-    return arrays.reduce((acc, cur) => acc.concat(checkSubarray(cur, winningLength)), []);
-  };
+  const addSubarrays = (arrays) =>
+    arrays.reduce((acc, cur) => acc.concat(checkSubarray(cur, winningLength)), [])
 
-  return addSubarrays(rows)
-    .concat(addSubarrays(columns))
-    .concat(diagonals);
-};
+  return addSubarrays(rows).concat(addSubarrays(columns)).concat(diagonals)
+}
 
 const clearScore = () => {
   countPlayer.firstPlayer = 0
@@ -208,7 +198,6 @@ const customGame = () => {
     warning.textContent = 'Заполните все поля ввода цифрами!'
   }
 }
-
 
 overlayClose.addEventListener('click', closeModal)
 clearScoreBtn.addEventListener('click', clearScore)
