@@ -28,7 +28,7 @@ input{
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #9999;
-    font-size: 20px;
+    font-size: 15px;
 }
 
 .board {
@@ -117,6 +117,11 @@ h3{
 }
 .active {
     display: block;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; 
 }
 @media only screen and (max-width: 450px) {
 

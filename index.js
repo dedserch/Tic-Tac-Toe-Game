@@ -1,7 +1,7 @@
 const cells = Array.from(document.querySelectorAll('.cell'))
 const restartBtn = document.querySelector('.restart')
 const board = document.querySelector('.board')
-const input = document.querySelector('input')
+const inputSize = document.querySelector('.input-size')
 const enterBtn = document.querySelector('.enter')
 const overlay = document.querySelector('.overlay')
 const overlayClose = document.querySelector('.close')
@@ -11,6 +11,7 @@ const firstCounter = document.querySelector('.counter-first')
 const secondCounter = document.querySelector('.counter-second')
 const clearScoreBtn = document.querySelector('.clear')
 const warning = document.querySelector('p')
+const inputRules = document.querySelector('.input-rules')
 
 const players = new Map([
   ['FirstPlayer', 'X'],
@@ -25,6 +26,7 @@ let gameMove = 0
 let boardSize = 3
 let freeCells = []
 let gameOver = false
+let winningLength = 3
 
 const generateBoard = (boardSize, board) => {
   board.innerHTML = ''
@@ -85,7 +87,7 @@ const cellClick = (e) => {
   freeCells[row * boardSize + column] = currentPlayer
   e.target.innerText = currentPlayer
 
-  if (checkWinner()) {
+  if (checkWinner(winningLength)) {
     openWinningModal(currentPlayer, gameMove)
     gameOver = true
     gameMove = 0
@@ -106,35 +108,64 @@ const cellClick = (e) => {
       : players.get('FirstPlayer')
 }
 
-const checkWinner = () => {
-  const conditions = winningConditions()
+const checkWinner = (winningLength) => {
+  const conditions = winningConditions(winningLength);
 
   return conditions.some((condition) => {
-    const symbols = condition.map((cell) => freeCells[cell])
-    const uniqueSymbol = [...new Set(symbols)]
+    const symbols = condition.map((cell) => freeCells[cell]);
+    const uniqueSymbol = [...new Set(symbols)];
 
-    return uniqueSymbol.length === 1 && uniqueSymbol[0] !== null
-  })
+    return uniqueSymbol.length === 1 && uniqueSymbol[0] !== null;
+  });
 }
 
-const winningConditions = () => {
+const winningConditions = (winningLength) => {
   const rows = Array.from(
     Array(boardSize),
     (_, i) => Array.from(Array(boardSize), (_, j) => i * boardSize + j)
-  )
+  );
   const columns = Array.from(
     Array(boardSize),
     (_, i) => Array.from(Array(boardSize), (_, j) => i + j * boardSize)
-  )
-  const diagonals = [[], []]
+  );
+  const diagonals = [];
 
-  Array.from({ length: boardSize }).forEach((_, i) => {
-    diagonals[0].push(i * (boardSize + 1))
-    diagonals[1].push((i + 1) * (boardSize - 1))
-  })
+  for (let i = 0; i <= boardSize - winningLength; i++) {
+    for (let j = 0; j <= boardSize - winningLength; j++) {
+      const diagonal = [];
+      for (let k = 0; k < winningLength; k++) {
+        diagonal.push((i + k) * boardSize + j + k);
+      }
+      diagonals.push(diagonal);
+    }
+  }
 
-  return rows.concat(columns, diagonals)
-}
+  for (let i = 0; i <= boardSize - winningLength; i++) {
+    for (let j = winningLength - 1; j < boardSize; j++) {
+      const diagonal = [];
+      for (let k = 0; k < winningLength; k++) {
+        diagonal.push((i + k) * boardSize + j - k);
+      }
+      diagonals.push(diagonal);
+    }
+  }
+
+  const checkSubarray = (array, length) => {
+    const result = [];
+    for (let i = 0; i <= array.length - length; i++) {
+      result.push(array.slice(i, i + length));
+    }
+    return result;
+  };
+
+  const addSubarrays = (arrays) => {
+    return arrays.reduce((acc, cur) => acc.concat(checkSubarray(cur, winningLength)), []);
+  };
+
+  return addSubarrays(rows)
+    .concat(addSubarrays(columns))
+    .concat(diagonals);
+};
 
 const clearScore = () => {
   countPlayer.firstPlayer = 0
@@ -152,24 +183,29 @@ const updateCounter = () => {
 const resetGame = () => {
   freeCells.fill(null)
   currentPlayer = players.get('FirstPlayer')
+  gameMove = 0
   generateBoard(boardSize, board)
+  winningConditions(winningLength)
 }
 
-const resizeBoard = () => {
-  const newSize = parseInt(input.value)
-  if (!isNaN(newSize) && newSize > 0) {
-    if(newSize <= 10){
+const customGame = () => {
+  const newSize = parseInt(inputSize.value)
+  const newWinningLength = parseInt(inputRules.value)
+  if (!isNaN(newSize) && newSize > 0 && newWinningLength > 0 && !isNaN(newWinningLength)) {
+    if(newSize <= 10 && newWinningLength <= 10){
       boardSize = newSize
-      input.value = ''
+      winningLength = newWinningLength
+      inputSize.value = ''
+      inputRules.value = ''
       warning.textContent = ''
       clearScore()
       resetGame()
     }
-    else {
+    else  {
       warning.textContent = 'Введите промежуток от 1 до 10!'
     }
   } else {
-    warning.textContent = 'Введите число!'
+    warning.textContent = 'Заполните все поля ввода цифрами!'
   }
 }
 
@@ -177,6 +213,6 @@ const resizeBoard = () => {
 overlayClose.addEventListener('click', closeModal)
 clearScoreBtn.addEventListener('click', clearScore)
 restartBtn.addEventListener('click', resetGame)
-enterBtn.addEventListener('click', resizeBoard)
+enterBtn.addEventListener('click', customGame)
 
 generateBoard(boardSize, board)
