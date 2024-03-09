@@ -158,11 +158,16 @@ const resetGame = () => {
 const resizeBoard = () => {
   const newSize = parseInt(input.value)
   if (!isNaN(newSize) && newSize > 0) {
-    boardSize = newSize
-    input.value = ''
-    warning.textContent = ''
-    clearScore()
-    resetGame()
+    if(newSize <= 10){
+      boardSize = newSize
+      input.value = ''
+      warning.textContent = ''
+      clearScore()
+      resetGame()
+    }
+    else {
+      warning.textContent = 'Введите промежуток от 1 до 10!'
+    }
   } else {
     warning.textContent = 'Введите число!'
   }
